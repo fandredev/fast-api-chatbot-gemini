@@ -10,12 +10,7 @@ on:
     - cron: '0 22 * * 0' # DOMINGO 22:00 UTC
 jobs:
   typecheck:
-    name: Type Check (${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest]
+    runs-on: ubuntu-latest
 
     steps:
       - name: Check out code
