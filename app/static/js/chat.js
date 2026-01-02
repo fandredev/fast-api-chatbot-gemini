@@ -30,7 +30,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   updateHeaderAvatar();
 
-  // Health Check logic
   const healthBanner = document.getElementById('health-banner');
   const checkHealth = async () => {
     try {
@@ -41,9 +40,18 @@ document.addEventListener('DOMContentLoaded', () => {
         userInput.disabled = true;
         userInput.placeholder = 'Serviço temporariamente indisponível (Cota)';
         document.getElementById('send-btn').disabled = true;
+      } else {
+        addMessage(
+          'Olá! Eu sou o AnimeChat. De qual anime gostaria de falar hoje?',
+          false
+        );
       }
     } catch (e) {
       console.error('Health Check Error:', e);
+      addMessage(
+        'Olá! Eu sou o AnimeChat. De qual anime gostaria de falar hoje?',
+        false
+      );
     }
   };
 
@@ -53,6 +61,72 @@ document.addEventListener('DOMContentLoaded', () => {
     const now = new Date();
     return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
+
+  // Rate Limiting Logic
+  const rateLimitTimer = document.getElementById('rate-limit-timer');
+  const secondsLeftSpan = document.getElementById('seconds-left');
+  const sendBtn = document.getElementById('send-btn');
+  let countdownInterval = null;
+
+  const getRequestTimestamps = () => {
+    const saved = localStorage.getItem('chatRequestTimestamps');
+    return saved ? JSON.parse(saved) : [];
+  };
+
+  const saveRequestTimestamps = (timestamps) => {
+    localStorage.setItem('chatRequestTimestamps', JSON.stringify(timestamps));
+  };
+
+  const cleanOldTimestamps = () => {
+    const now = Date.now();
+    const timestamps = getRequestTimestamps().filter((ts) => now - ts < 60000);
+    saveRequestTimestamps(timestamps);
+    return timestamps;
+  };
+
+  const startCooldown = (timeMs) => {
+    if (countdownInterval) clearInterval(countdownInterval);
+
+    rateLimitTimer.style.display = 'flex';
+    userInput.disabled = true;
+    sendBtn.disabled = true;
+
+    const updateTimer = () => {
+      const remaining = Math.ceil((timeMs - (Date.now() - startTime)) / 1000);
+      if (remaining <= 0) {
+        clearInterval(countdownInterval);
+        rateLimitTimer.style.display = 'none';
+        // Only re-enable if health banner is not showing
+        if (healthBanner.style.display === 'none') {
+          userInput.disabled = false;
+          sendBtn.disabled = false;
+          userInput.placeholder = 'Responder...';
+        }
+      } else {
+        secondsLeftSpan.innerText = remaining;
+      }
+    };
+
+    const startTime = Date.now();
+    secondsLeftSpan.innerText = Math.ceil(timeMs / 1000);
+    countdownInterval = setInterval(updateTimer, 1000);
+  };
+
+  const checkRateLimit = () => {
+    const timestamps = cleanOldTimestamps();
+    if (timestamps.length >= 2) {
+      const oldestTs = timestamps[0];
+      const waitTime = 60000 - (Date.now() - oldestTs);
+      if (waitTime > 0) {
+        startCooldown(waitTime);
+        return false;
+      }
+    }
+    return true;
+  };
+
+  // Initialize rate limit state on load
+  checkRateLimit();
 
   const addMessage = (messageData, isUser = false) => {
     const group = document.createElement('div');
@@ -70,12 +144,17 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
     } else {
       group.innerHTML = `
-                <div class="message-content">
-                    <span class="sender-name">Assistente</span>
-                    <div class="bubble bot-bubble">${
-                      messageData.text || messageData
-                    }</div>
-                    <span class="timestamp">${time}</span>
+                <div class="message-row">
+                    <div class="bot-avatar">
+                        <img src="https://ui-avatars.com/api/?name=Assistant&background=e1e4e8&color=70757a" alt="Bot" />
+                    </div>
+                    <div class="message-content">
+                        <span class="sender-name">Assistente</span>
+                        <div class="bubble bot-bubble">${
+                          messageData.text || messageData
+                        }</div>
+                        <span class="timestamp">${time}</span>
+                    </div>
                 </div>
             `;
     }
@@ -128,22 +207,38 @@ document.addEventListener('DOMContentLoaded', () => {
   chatForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
+    if (!checkRateLimit()) return;
+
     const message = userInput.value.trim();
     if (!message) return;
 
+    // Add current timestamp to rate limit tracking
+    const timestamps = getRequestTimestamps();
+    timestamps.push(Date.now());
+    saveRequestTimestamps(timestamps);
+
+    // Check if we just hit the limit
+    checkRateLimit();
+
     addMessage(message, true);
+
     userInput.value = '';
 
     // Show Typing Indicator
     const typingGroup = document.createElement('div');
     typingGroup.classList.add('message-group', 'bot-group');
     typingGroup.innerHTML = `
-      <div class="message-content">
-        <span class="sender-name">Assistente</span>
-        <div class="bubble bot-bubble typing-status">
-          <div class="dot"></div>
-          <div class="dot"></div>
-          <div class="dot"></div>
+      <div class="message-row">
+        <div class="bot-avatar">
+          <img src="https://ui-avatars.com/api/?name=Assistant&background=e1e4e8&color=70757a" alt="Bot" />
+        </div>
+        <div class="message-content">
+          <span class="sender-name">Assistente</span>
+          <div class="bubble bot-bubble typing-status">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+          </div>
         </div>
       </div>
     `;
@@ -171,6 +266,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (data.error && data.error.includes('429')) {
         healthBanner.style.display = 'flex';
         userInput.disabled = true;
+      } else if (response.status === 429) {
+        startCooldown(60000);
       }
 
       addMessage(data);

@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="/static/css/style.css" />
     <link rel="stylesheet" href="/static/css/emoji.css" />
   </head>
-  <body>
+  <body data-theme="dark">
     <div class="chat-container">
       <header class="chat-header">
         <div class="header-top">
@@ -48,15 +48,7 @@
               stroke-linecap="round"
               stroke-linejoin="round"
             >
-              <circle cx="12" cy="12" r="5"></circle>
-              <line x1="12" y1="1" x2="12" y2="3"></line>
-              <line x1="12" y1="21" x2="12" y2="23"></line>
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-              <line x1="1" y1="12" x2="3" y2="12"></line>
-              <line x1="21" y1="12" x2="23" y2="12"></line>
-              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
             </svg>
           </button>
         </div>
@@ -73,24 +65,15 @@
             temporariamente.</span
           >
         </div>
+      </div>
 
-        <div class="message-group bot-group">
-          <div class="message-row">
-            <div class="bot-avatar">
-              <img
-                src="https://ui-avatars.com/api/?name=Assistant&background=e1e4e8&color=70757a"
-                alt="Bot"
-              />
-            </div>
-            <div class="message-content">
-              <span class="sender-name">Assistente</span>
-              <div class="bubble bot-bubble">
-                Olá! Eu sou o AnimeChat. De qual anime gostaria de falar hoje?
-              </div>
-              <span class="timestamp">Agora mesmo</span>
-            </div>
-          </div>
-        </div>
+      <!-- Rate Limit Timer -->
+      <div id="rate-limit-timer" class="rate-limit-timer" style="display: none">
+        <span class="timer-icon">🕒</span>
+        <span id="timer-text" class="timer-text"
+          >Muitas perguntas! Aguarde <span id="seconds-left">60</span>s para a
+          próxima.</span
+        >
       </div>
 
       <footer class="chat-footer">
