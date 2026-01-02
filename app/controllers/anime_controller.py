@@ -55,21 +55,6 @@ class AnimeController:
                 logger.error(f"Erro ao criar sessão de chat: {e}", exc_info=True)
                 self.chat_session = None
 
-    def check_health(self) -> bool:
-        """Check if the API Key has available quota by making a minimal call."""
-        if not self.client:
-            return False
-        try:
-            self.client.models.generate_content(
-                model=self.model,
-                contents="ping",
-                config=types.GenerateContentConfig(max_output_tokens=1),
-            )
-            return True
-        except Exception as e:
-            logger.warning(f"Falha no Health Check (provável falta de cota): {e}")
-            return False
-
     def get_response(self, message: str) -> dict:
         """Return a dictionary with Gemini's response about anime/manga using the chat method."""
         if not self.api_key or not self.client or not self.chat_session:

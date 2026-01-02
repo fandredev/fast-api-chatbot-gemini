@@ -1,22 +1,31 @@
-from fastapi import APIRouter
-from pydantic import BaseModel
+from fastapi import APIRouter, Request
 from app.controllers.anime_controller import AnimeController
+from app.controllers.health_check_controller import HealthCheckController
+from app.models.user_models import UserMessage
+from slowapi import Limiter
+from slowapi.util import get_remote_address
+
+anime_controller = AnimeController()
+health_controller = HealthCheckController()
 
 router = APIRouter()
-anime_controller = AnimeController()
-
-
-class UserMessage(BaseModel):
-    message: str
+limiter = Limiter(key_func=get_remote_address)
 
 
 @router.get("/health")
 def health_check():
-    is_healthy = anime_controller.check_health()
+    """
+    Verifica se o Gemini está funcionando corretamente.
+    """
+    is_healthy = health_controller.check_gemini_health()
     return {"status": "ok" if is_healthy else "quota_exceeded"}
 
 
 @router.post("/chat")
-def chat(user_msg: UserMessage):
+@limiter.limit("2/minute")
+def chat(request: Request, user_msg: UserMessage):
+    """
+    Processa uma mensagem do usuário e retorna uma resposta do chatbot.
+    """
     result = anime_controller.get_response(user_msg.message)
     return result
