@@ -1,5 +1,4 @@
 project-includes = [
     "**/*.py*",
-    "**/*.ipynb",
 ]
 python-platform = "linux"
