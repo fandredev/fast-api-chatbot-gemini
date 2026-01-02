@@ -17,15 +17,19 @@ An anime-specialized chatbot built with **FastAPI** following the **MVC** (Model
 ```text
 .
 ├── app/
-│   ├── controllers/    # Processing logic (MVC: Controller)
-│   ├── routes/         # API and View routes
-│   ├── static/         # CSS, JS, and Images
-│   └── templates/      # HTML Templates (MVC: View)
-├── venv/               # Python virtual environment
-├── main.py             # Application entry point
-├── requirements.txt    # Project dependencies
-├── pyrefly.toml        # Linter configuration
-└── README.md           # Documentation
+│   ├── controllers/
+│   ├── routes/
+│   ├── static/
+│   ├── templates/
+│   └── utils/
+├── logs/
+│   ├── chatbot.log
+├── .gitignore
+├── venv/
+├── main.py
+├── requirements.txt
+├── pyrefly.toml
+└── README.md
 ```
 
 ## 🚀 How to Run

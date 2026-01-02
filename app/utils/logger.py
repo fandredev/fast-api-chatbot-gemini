@@ -5,13 +5,13 @@ from pathlib import Path
 
 def setup_logger(name: str = "anime_chatbot") -> logging.Logger:
     """
-    Configura e retorna um logger com saída para arquivo e console.
+    Configure and return a logger with output to file and console.
 
     Args:
-        name: Nome do logger (padrão: "anime_chatbot")
+        name: Logger name (default: "anime_chatbot")
 
     Returns:
-        Logger configurado
+        Configured logger instance
     """
     logger = logging.getLogger(name)
 
@@ -28,14 +28,6 @@ def setup_logger(name: str = "anime_chatbot") -> logging.Logger:
         datefmt="%Y-%m-%d %H:%M:%S",
     )
 
-    file_handler = RotatingFileHandler(
-        filename=log_dir / "chatbot.log",
-        maxBytes=5 * 1024 * 1024,  # 5MB
-        backupCount=5,
-        encoding="utf-8",
-    )
-    file_handler.setLevel(logging.DEBUG)
-    file_handler.setFormatter(formatter)
     file_handler = RotatingFileHandler(
         filename=log_dir / "chatbot.log",
         maxBytes=5 * 1024 * 1024,  # 5MB

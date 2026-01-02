@@ -18,7 +18,7 @@ class AnimeController:
             logger.warning("GEMINI_API_KEY não encontrada nas variáveis de ambiente")
 
     def _init_chat_session(self):
-        """Inicializa a sessão de chat com a instrução de sistema e configuração de pensamento."""
+        """Initialize the chat session with system instruction and configuration."""
         system_instruction = """
 
             ## PERSONA:
@@ -56,7 +56,7 @@ class AnimeController:
                 self.chat_session = None
 
     def check_health(self) -> bool:
-        """Verifica se a API Key tem cota disponível fazendo uma chamada mínima."""
+        """Check if the API Key has available quota by making a minimal call."""
         if not self.client:
             return False
         try:
@@ -71,7 +71,7 @@ class AnimeController:
             return False
 
     def get_response(self, message: str) -> dict:
-        """Retorna um dicionário com a resposta do Gemini sobre o anime/manga usando o metódo de chat."""
+        """Return a dictionary with Gemini's response about anime/manga using the chat method."""
         if not self.api_key or not self.client or not self.chat_session:
             return {
                 "error": "Chave de API inválida ou sessão não inicializada.",
