@@ -8,4 +8,7 @@ templates = Jinja2Templates(directory="app/templates")
 
 @router.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
+    """
+    Renderiza a página inicial.
+    """
     return templates.TemplateResponse("index.html", {"request": request})
