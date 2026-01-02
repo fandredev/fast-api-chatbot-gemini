@@ -1,12 +1,13 @@
 name: Pyrefly Type Check
 
 on:
+  push:
+    branches: [main]
   pull_request:
     branches: [main]
-  workflow_dispatch: # Allows manual triggering from the GitHub UI
+  workflow_dispatch:
   schedule:
-    - cron: '0 22 * * 0' # Todo domingo às 22:00 UTC (noite de domingo no Brasil)
-
+    - cron: '0 22 * * 0' # DOMINGO 22:00 UTC
 jobs:
   typecheck:
     name: Type Check (${{ matrix.os }})

@@ -18,6 +18,7 @@ An anime-specialized chatbot built with **FastAPI** following the **MVC** (Model
 .
 ├── app/
 │   ├── controllers/
+│   ├── models/
 │   ├── routes/
 │   ├── static/
 │   ├── templates/
