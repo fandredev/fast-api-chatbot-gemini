@@ -4,7 +4,7 @@ An anime-specialized chatbot built with **FastAPI** following the **MVC** (Model
 
 ## 🛠️ Stack Used
 
-<img src="https://skillicons.dev/icons?i=python,fastapi,vscode,git,html,css,javascript" alt="python,fastapi,vscode,git,html,css,javascript" />
+<img src="https://skillicons.dev/icons?i=python,fastapi,githubactions,vscode,git,html,css,javascript" alt="python,fastapi,githubactions,vscode,git,html,css,javascript" />
 
 ### Other tools:
 
@@ -67,6 +67,7 @@ python main.py
 ```
 
 Access the chat at: `http://127.0.0.1:8000`
+Access the API docs at: `http://127.0.0.1:8000/docs`
 
 ## 🛠️ Code Quality
 

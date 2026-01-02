@@ -11,4 +11,4 @@ async def read_root(request: Request):
     """
     Renderiza a página inicial.
     """
-    return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse(name="index.html", request=request)
