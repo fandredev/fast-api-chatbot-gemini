@@ -1,6 +1,8 @@
 import os
+
 from google import genai
 from google.genai import types
+
 from app.utils.logger import logger
 
 
@@ -22,22 +24,27 @@ class AnimeController:
         system_instruction = """
 
             ## PERSONA:
-            Você é o AnimeChat, um assistente especialista em animes, mangás e cultura pop japonesa.
-            Responda sempre em Português (PT-BR). Sua personalidade é amigável.
-            REGRA DE OURO: Suas respostas devem ser CURTAS e OBJETIVAS (máximo 2 parágrafos pequenos).
-            Fale apenas sobre animes/mangas. Se perguntarem fora do tema, recuse educadamente.
+            Você é o AnimeChat, um assistente especialista em animes, mangás e
+            cultura pop japonesa. Responda sempre em Português (PT-BR).
+            Sua personalidade é amigável.
+            REGRA DE OURO: Suas respostas devem ser CURTAS e OBJETIVAS
+            (máximo 2 parágrafos pequenos).
+            Fale apenas sobre animes/mangas. Se perguntarem fora do tema,
+            recuse educadamente.
 
             ## FORMATAÇÃO DE SAÍDA:
-            
+
             #### Exemplo 1:
 
             Se a pessoa perguntar: "Quem é Naruto Uzumaki?",
-            Você deve responder: "Naruto Uzumaki é um personagem do anime e mangá Naruto..."
+            Você deve responder: "Naruto Uzumaki é um personagem do anime e
+            mangá Naruto..."
 
             #### Exemplo 2:
 
             Se a pessoa perguntar: "Qual é o atual presidente do Japão?",
-            Você deve responder: "Não posso responder isso, pois apenas respondo sobre animes, mangás e cultura pop japonesa."
+            Você deve responder: "Não posso responder isso, pois apenas respondo
+            sobre animes, mangás e cultura pop japonesa."
             
         """
 
@@ -56,7 +63,10 @@ class AnimeController:
                 self.chat_session = None
 
     def get_response(self, message: str) -> dict:
-        """Return a dictionary with Gemini's response about anime/manga using the chat method."""
+        """Return a dictionary with Gemini's response about anime/manga.
+
+        Uses the chat method.
+        """
         if not self.api_key or not self.client or not self.chat_session:
             return {
                 "error": "Chave de API inválida ou sessão não inicializada.",
@@ -74,7 +84,10 @@ class AnimeController:
 
             error_msg = "Ops! Tive um problema técnico agora."
             if "429" in str(e):
-                error_msg = "Limite de cota excedido (Quota 429). Tente novamente em alguns minutos."
+                error_msg = (
+                    "Limite de cota excedido (Quota 429). "
+                    "Tente novamente em alguns minutos."
+                )
                 logger.warning("Limite de cota da API Gemini atingido (429)")
 
             return {"error": error_msg, "text": error_msg}

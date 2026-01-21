@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Request
+from slowapi import Limiter
+from slowapi.util import get_remote_address
+
 from app.controllers.anime_controller import AnimeController
 from app.controllers.health_check_controller import HealthCheckController
 from app.models.user_models import UserMessage
-from slowapi import Limiter
-from slowapi.util import get_remote_address
 
 anime_controller = AnimeController()
 health_controller = HealthCheckController()

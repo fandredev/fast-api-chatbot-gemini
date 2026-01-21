@@ -1,17 +1,19 @@
-from dotenv import load_dotenv
 import os
+
+from dotenv import load_dotenv
 
 load_dotenv()
 
-from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
-from app.routes import view_routes, api_routes
-from app.utils.logger import logger
-from slowapi import _rate_limit_exceeded_handler
-from slowapi.errors import RateLimitExceeded
-from slowapi.middleware import SlowAPIMiddleware
-from starlette.requests import Request
-from starlette.responses import Response
+from fastapi import FastAPI  # noqa: E402
+from fastapi.staticfiles import StaticFiles  # noqa: E402
+from slowapi import _rate_limit_exceeded_handler  # noqa: E402
+from slowapi.errors import RateLimitExceeded  # noqa: E402
+from slowapi.middleware import SlowAPIMiddleware  # noqa: E402
+from starlette.requests import Request  # noqa: E402
+from starlette.responses import Response  # noqa: E402
+
+from app.routes import api_routes, view_routes  # noqa: E402
+from app.utils.logger import logger  # noqa: E402
 
 logger.info("Variáveis de ambiente carregadas com sucesso")
 logger.info(f"Servidor iniciado com modelo: {os.getenv('GEMINI_MODEL_NAME')}")
