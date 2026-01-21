@@ -8,7 +8,8 @@ An anime-specialized chatbot built with **FastAPI** following the **MVC** (Model
 
 ### Other tools:
 
-- [Pyrefly](https://pyrefly.org/)
+- [Ruff](https://docs.astral.sh/ruff/)
+- [uv](https://docs.astral.sh/uv/)
 - [Antigravity](https://antigravity.google/)
 - [Google Gemini](https://gemini.google/)
 
@@ -26,10 +27,9 @@ An anime-specialized chatbot built with **FastAPI** following the **MVC** (Model
 ├── logs/
 │   ├── chatbot.log
 ├── .gitignore
-├── venv/
 ├── main.py
-├── requirements.txt
-├── pyrefly.toml
+├── pyproject.toml
+├── uv.lock
 └── README.md
 ```
 
@@ -37,33 +37,14 @@ An anime-specialized chatbot built with **FastAPI** following the **MVC** (Model
 
 ### 1. Prerequisites
 
-Ensure you have Python 3.10+ installed on your machine.
+Ensure you have [uv](https://github.com/astral-sh/uv) installed on your machine.
 
-### 2. Set Up the Virtual Environment
+### 2. Set Up and Run
 
-Clone the repository and create the isolated environment:
-
-```bash
-# Create the venv
-python3 -m venv venv
-
-# Activate the venv (Linux/macOS)
-source venv/bin/activate
-
-# On Windows:
-# venv\Scripts\activate
-```
-
-### 3. Install Dependencies
+Clone the repository and run the application using `uv`:
 
 ```bash
-pip install -r requirements.txt
-```
-
-### 4. Run the Application
-
-```bash
-python main.py
+uv run --env-file=.env main.py
 ```
 
 Access the chat at: `http://127.0.0.1:8000`
@@ -71,8 +52,8 @@ Access the API docs at: `http://127.0.0.1:8000/docs`
 
 ## 🛠️ Code Quality
 
-The project uses **Pyrefly** to ensure type consistency and Python code quality. To run the verification:
+The project uses **Ruff** to ensure code quality and consistency. To run the lint check:
 
 ```bash
-./venv/bin/pyrefly check
+uv run ruff check .
 ```
