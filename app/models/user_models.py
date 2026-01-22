@@ -2,13 +2,11 @@ from pydantic import BaseModel, Field
 
 
 class UserMessage(BaseModel):
-    """
-    Modelo para representar uma mensagem enviada pelo usuário.
-    """
+    """Model to represent a message sent by the user."""
 
     message: str = Field(
         ...,
         min_length=1,
         max_length=500,
-        description="A mensagem enviada pelo usuário para o chatbot.",
+        description="The message sent by the user to the chatbot.",
     )

@@ -18,7 +18,7 @@ class HealthCheckController:
             logger.warning("GEMINI_API_KEY não encontrada no HealthCheckController")
 
     def check_gemini_health(self) -> bool:
-        """Verifica se a chave da API do Gemini tem cota disponível."""
+        """Verify if the Gemini API key has available quota."""
         if not self.client:
             return False
         try:

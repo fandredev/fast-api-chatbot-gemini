@@ -67,3 +67,8 @@ ignore = []
 # Allow autofix for all enabled rules (when `--fix`) is provided.
 fixable = ["ALL"]
 unfixable = []
+[tool.pytest.ini_options]
+markers = [
+    "route: marks tests related to API and View routes (integration tests)",
+    "unit: marks unit tests",
+]
