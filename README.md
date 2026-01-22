@@ -1,5 +1,8 @@
 # AnimeChat 🎌
 
+[![Run tests](https://github.com/fandredev/fast-api-chatbot-gemini/actions/workflows/tests.yml/badge.svg)](https://github.com/fandredev/fast-api-chatbot-gemini/actions/workflows/tests.yml)
+[![Ruff Lint Check](https://github.com/fandredev/fast-api-chatbot-gemini/actions/workflows/lint.yml/badge.svg)](https://github.com/fandredev/fast-api-chatbot-gemini/actions/workflows/lint.yml)
+
 An anime-specialized chatbot built with **FastAPI** following the **MVC** (Model-View-Controller) architecture. This project was designed to provide a chat experience focused exclusively on the otaku universe, filtering out unrelated topics.
 
 ## 🛠️ Stack Used

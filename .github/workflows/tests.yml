@@ -3,6 +3,9 @@ name: Run tests
 on:
   push:
     branches: ['main']
+  workflow_dispatch:
+  schedule:
+    - cron: '0 22 * * 0' # SUNDAY 22:00 UTC
 
 jobs:
   test:
