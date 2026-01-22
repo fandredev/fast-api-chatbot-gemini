@@ -29,7 +29,13 @@ wheels/
 .env
 logs/
 
-
+# Virtual Environment
 venv
 .pytest_cache
+
+# Ruff
 .ruff_cache
+
+# Coverage
+htmlcov
+.coverage
