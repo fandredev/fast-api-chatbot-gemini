@@ -12,6 +12,7 @@ An anime-specialized chatbot built with **FastAPI** following the **MVC** (Model
 - [uv](https://docs.astral.sh/uv/)
 - [Antigravity](https://antigravity.google/)
 - [Google Gemini](https://gemini.google/)
+- [pytest](https://docs.pytest.org/)
 
 ## 🏗️ Project Structure
 
