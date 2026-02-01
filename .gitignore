@@ -39,3 +39,6 @@ venv
 # Coverage
 htmlcov
 .coverage
+
+# Antigravity
+.agent
