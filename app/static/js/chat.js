@@ -5,14 +5,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const headerAvatarImg = document.getElementById('header-avatar-img');
   const headerAvatarFallback = document.getElementById(
-    'header-avatar-fallback'
+    'header-avatar-fallback',
   );
 
   const updateHeaderAvatar = async () => {
     try {
       const characterId = Math.floor(Math.random() * 500) + 1;
       const response = await fetch(
-        `https://api.jikan.moe/v4/characters/${characterId}`
+        `https://api.jikan.moe/v4/characters/${characterId}`,
       );
       if (response.ok) {
         const data = await response.json();
@@ -43,14 +43,14 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         addMessage(
           'Olá! Eu sou o AnimeChat. De qual anime gostaria de falar hoje?',
-          false
+          false,
         );
       }
     } catch (e) {
       console.error('Health Check Error:', e);
       addMessage(
         'Olá! Eu sou o AnimeChat. De qual anime gostaria de falar hoje?',
-        false
+        false,
       );
     }
   };
@@ -204,6 +204,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  const addStreamingMessage = () => {
+    const group = document.createElement('div');
+    group.classList.add('message-group', 'bot-group');
+    const time = getCurrentTime();
+    group.innerHTML = `
+                <div class="message-row">
+                    <div class="bot-avatar">
+                        <img src="https://ui-avatars.com/api/?name=Assistant&background=e1e4e8&color=70757a" alt="Bot" />
+                    </div>
+                    <div class="message-content">
+                        <span class="sender-name">Assistente</span>
+                        <div class="bubble bot-bubble"></div>
+                        <span class="timestamp">${time}</span>
+                    </div>
+                </div>
+            `;
+    chatMessages.appendChild(group);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    return group.querySelector('.bot-bubble');
+  };
+
   chatForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -259,18 +280,42 @@ document.addEventListener('DOMContentLoaded', () => {
         chatMessages.removeChild(typingGroup);
       }
 
-      if (!response.ok) throw new Error('Server error');
-
-      const data = await response.json();
-
-      if (data.error && data.error.includes('429')) {
-        healthBanner.style.display = 'flex';
-        userInput.disabled = true;
-      } else if (response.status === 429) {
-        startCooldown(60000);
+      if (!response.ok) {
+        if (response.status === 429) {
+          startCooldown(60000);
+          addMessage(
+            'Limite de frequência atingido. Por favor, aguarde um momento.',
+          );
+          return;
+        }
+        throw new Error('Server error');
       }
 
-      addMessage(data);
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      const botBubble = addStreamingMessage();
+
+      let fullText = '';
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value, { stream: true });
+        fullText += chunk;
+
+        // Check for specific error messages in the stream
+        if (fullText.includes('Erro: ') || fullText.includes('Ops!')) {
+          botBubble.innerText = fullText;
+          if (fullText.includes('429')) {
+            healthBanner.style.display = 'flex';
+            userInput.disabled = true;
+          }
+          break;
+        }
+
+        botBubble.innerText = fullText;
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
     } catch (error) {
       // Remove Typing Indicator on error too
       if (chatMessages.contains(typingGroup)) {

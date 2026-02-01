@@ -58,28 +58,15 @@ class TestChatApi(unittest.TestCase):
         """Set up the test client for each test case."""
         self.client = TestClient(app)
 
-    @patch("app.routes.api_routes.anime_controller.get_response")
-    def test_should_return_response_when_message_is_valid(self, mock_get_response):
-        """Test if the chat route returns the chatbot response for a valid message."""
-        mock_get_response.return_value = {"text": "Hello! I am a chatbot."}
+    @patch("app.routes.api_routes.anime_controller.get_streaming_response")
+    def test_should_return_streaming_response_when_message_is_valid(self, mock_stream):
+        """Test if the chat route returns a streaming response for a valid message."""
+        mock_stream.return_value = iter(["Hello!", " How are you?"])
         payload = {"message": "Hello"}
         response = self.client.post("/api/chat", json=payload)
 
         self.assertEqual(response.status_code, HTTPStatus.OK)
-        self.assertEqual(response.json(), {"text": "Hello! I am a chatbot."})
-
-    @patch("app.routes.api_routes.anime_controller.get_response")
-    def test_should_return_error_when_controller_fails(self, mock_get_response):
-        """Test if the chat route returns an error when the controller fails."""
-        mock_get_response.return_value = {
-            "error": "API Error",
-            "text": "Ops! Technical problem.",
-        }
-        payload = {"message": "Hello"}
-        response = self.client.post("/api/chat", json=payload)
-
-        self.assertEqual(response.status_code, HTTPStatus.OK)
-        self.assertIn("error", response.json())
+        self.assertEqual(response.text, "Hello! How are you?")
 
     def test_should_return_422_when_message_is_invalid(self):
         """Test if the chat route returns 422 for an invalid message."""

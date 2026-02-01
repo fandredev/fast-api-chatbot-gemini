@@ -22,48 +22,50 @@ class TestAnimeController(unittest.TestCase):
 
         self.controller = AnimeController()
 
-    def test_should_return_text_when_api_responds_successfully(self):
-        """Test if get_response returns the correct text when API call succeeds."""
-        mock_response = MagicMock()
-        mock_response.text = "Naruto is a ninja."
-        self.controller.chat_session.send_message.return_value = mock_response
+    def test_should_yield_text_when_api_responds_successfully(self):
+        """Test if get_streaming_response yields correct text."""
+        mock_chunk = MagicMock()
+        mock_chunk.text = "Naruto is a ninja."
+        self.controller.chat_session.send_message_stream.return_value = [mock_chunk]
 
-        result = self.controller.get_response("Who is Naruto?")
+        result = list(self.controller.get_streaming_response("Who is Naruto?"))
 
-        self.assertEqual(result, {"text": "Naruto is a ninja."})
+        self.assertEqual(result, ["Naruto is a ninja."])
 
-    def test_should_return_error_when_api_key_is_missing(self):
-        """Test if get_response returns an error message when API key is missing."""
+    def test_should_yield_error_when_api_key_is_missing(self):
+        """Test if get_streaming_response yields error when API key is missing."""
         self.controller.api_key = None
 
-        result = self.controller.get_response("Hello")
+        result = list(self.controller.get_streaming_response("Hello"))
 
-        self.assertIn("error", result)
         self.assertEqual(
-            result["error"], "Chave de API inválida ou sessão não inicializada."
+            result, ["Erro: Chave de API inválida ou sessão não inicializada."]
         )
 
-    def test_should_return_technical_error_when_api_raises_generic_exception(self):
-        """Test if get_response handles generic exceptions gracefully."""
-        self.controller.chat_session.send_message.side_effect = Exception(
+    def test_should_yield_technical_error_when_api_raises_generic_exception(self):
+        """Test if get_streaming_response handles generic exceptions gracefully."""
+        self.controller.chat_session.send_message_stream.side_effect = Exception(
             "Generic Error"
         )
 
         with patch("app.controllers.anime_controller.logger") as mock_logger:
-            result = self.controller.get_response("Hello")
+            result = list(self.controller.get_streaming_response("Hello"))
 
-            self.assertEqual(result["error"], "Ops! Tive um problema técnico agora.")
+            self.assertEqual(
+                result, ["Erro: Ops! Tive um problema técnico no streaming."]
+            )
             mock_logger.error.assert_called()
 
-    def test_should_return_quota_error_when_api_raises_429_exception(self):
-        """Test if get_response handles 429 quota errors specifically."""
-        self.controller.chat_session.send_message.side_effect = Exception(
+    def test_should_yield_quota_error_when_api_raises_429_exception(self):
+        """Test if get_streaming_response handles 429 quota errors specifically."""
+        self.controller.chat_session.send_message_stream.side_effect = Exception(
             "error 429: Quota exceeded"
         )
 
-        result = self.controller.get_response("Hello")
+        result = list(self.controller.get_streaming_response("Hello"))
 
-        self.assertIn("Limite de cota excedido", result["error"])
+        self.assertIn("Limite de cota excedido", result[0])
+        self.assertIn("Erro:", result[0])
 
     def test_should_initialize_chat_session_when_client_is_valid(self):
         """Test if _init_chat_session correctly sets up the chat session."""

@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Request
+from fastapi.responses import StreamingResponse
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
@@ -26,7 +27,9 @@ def health_check():
 @limiter.limit("2/minute")
 def chat(request: Request, user_msg: UserMessage):
     """
-    Processa uma mensagem do usuário e retorna uma resposta do chatbot.
+    Processa uma mensagem do usuário e retorna uma resposta do chatbot em streaming.
     """
-    result = anime_controller.get_response(user_msg.message)
-    return result
+    return StreamingResponse(
+        anime_controller.get_streaming_response(user_msg.message),
+        media_type="text/plain",
+    )

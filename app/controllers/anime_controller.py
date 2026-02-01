@@ -45,7 +45,7 @@ class AnimeController:
             Se a pessoa perguntar: "Qual é o atual presidente do Japão?",
             Você deve responder: "Não posso responder isso, pois apenas respondo
             sobre animes, mangás e cultura pop japonesa."
-            
+
         """
 
         if self.client:
@@ -62,27 +62,27 @@ class AnimeController:
                 logger.error(f"Erro ao criar sessão de chat: {e}", exc_info=True)
                 self.chat_session = None
 
-    def get_response(self, message: str) -> dict:
-        """Return a dictionary with Gemini's response about anime/manga.
+    def get_streaming_response(self, message: str):
+        """Yield chunks of Gemini's response about anime/manga.
 
-        Uses the chat method.
+        Uses the chat method with streaming.
         """
         if not self.api_key or not self.client or not self.chat_session:
-            return {
-                "error": "Chave de API inválida ou sessão não inicializada.",
-                "text": "Desculpe, a chave da API não foi configurada corretamente.",
-            }
+            yield "Erro: Chave de API inválida ou sessão não inicializada."
+            return
+
         try:
-            response = self.chat_session.send_message(message)
-            return {"text": response.text}
+            for chunk in self.chat_session.send_message_stream(message):
+                if chunk.text:
+                    yield chunk.text
 
         except Exception as e:
             logger.error(
-                f"Erro ao processar mensagem - {type(e).__name__}: {str(e)}",
+                f"Erro no streaming - {type(e).__name__}: {str(e)}",
                 exc_info=True,
             )
 
-            error_msg = "Ops! Tive um problema técnico agora."
+            error_msg = "Ops! Tive um problema técnico no streaming."
             if "429" in str(e):
                 error_msg = (
                     "Limite de cota excedido (Quota 429). "
@@ -90,4 +90,4 @@ class AnimeController:
                 )
                 logger.warning("Limite de cota da API Gemini atingido (429)")
 
-            return {"error": error_msg, "text": error_msg}
+            yield f"Erro: {error_msg}"
